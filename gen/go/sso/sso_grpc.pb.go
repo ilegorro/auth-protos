@@ -27,7 +27,7 @@ type AuthClient interface {
 	// Login logs in a user and returns an auth token
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	// IsAdmin checks wheter a user is an admin
-	IsAdmin(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	IsAdmin(ctx context.Context, in *IsAdminRequest, opts ...grpc.CallOption) (*IsAdminResponse, error)
 }
 
 type authClient struct {
@@ -56,8 +56,8 @@ func (c *authClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.C
 	return out, nil
 }
 
-func (c *authClient) IsAdmin(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
-	out := new(LoginResponse)
+func (c *authClient) IsAdmin(ctx context.Context, in *IsAdminRequest, opts ...grpc.CallOption) (*IsAdminResponse, error) {
+	out := new(IsAdminResponse)
 	err := c.cc.Invoke(ctx, "/auth.Auth/IsAdmin", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -74,7 +74,7 @@ type AuthServer interface {
 	// Login logs in a user and returns an auth token
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	// IsAdmin checks wheter a user is an admin
-	IsAdmin(context.Context, *LoginRequest) (*LoginResponse, error)
+	IsAdmin(context.Context, *IsAdminRequest) (*IsAdminResponse, error)
 	mustEmbedUnimplementedAuthServer()
 }
 
@@ -88,7 +88,7 @@ func (UnimplementedAuthServer) Register(context.Context, *RegisterRequest) (*Reg
 func (UnimplementedAuthServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedAuthServer) IsAdmin(context.Context, *LoginRequest) (*LoginResponse, error) {
+func (UnimplementedAuthServer) IsAdmin(context.Context, *IsAdminRequest) (*IsAdminResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IsAdmin not implemented")
 }
 func (UnimplementedAuthServer) mustEmbedUnimplementedAuthServer() {}
@@ -141,7 +141,7 @@ func _Auth_Login_Handler(srv interface{}, ctx context.Context, dec func(interfac
 }
 
 func _Auth_IsAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LoginRequest)
+	in := new(IsAdminRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -153,7 +153,7 @@ func _Auth_IsAdmin_Handler(srv interface{}, ctx context.Context, dec func(interf
 		FullMethod: "/auth.Auth/IsAdmin",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServer).IsAdmin(ctx, req.(*LoginRequest))
+		return srv.(AuthServer).IsAdmin(ctx, req.(*IsAdminRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
